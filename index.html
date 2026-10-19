@@ -656,9 +656,11 @@
   }
 
   /* ---- ขั้นตอนการจอง 3 ขั้น (ใต้รูปปก) : แบบ A เส้นไทม์ไลน์ ---- */
-  .howto-title{max-width:620px; margin:18px auto 0; padding:0 18px; color:var(--muted);
-    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.14em; text-align:center;}
-  .howto{max-width:620px; margin:12px auto 2px; padding:0 18px; display:grid;
+  .howto-title{max-width:620px; margin:22px auto 0; padding:0 18px; text-align:center;
+    font-family:'Kanit',sans-serif; font-weight:600; font-size:17px; color:var(--text); letter-spacing:.01em;}
+  .howto-title::after{content:""; display:block; width:28px; height:2px; margin:6px auto 0; border-radius:2px;
+    background:linear-gradient(90deg, var(--amber-hot), var(--amber));}
+  .howto{max-width:620px; margin:14px auto 2px; padding:0 18px; display:grid;
     grid-template-columns:repeat(3,1fr); position:relative; font-family:'Kanit',sans-serif;}
   .howto::before{content:""; position:absolute; top:10px; left:calc(18px + 16.6%); right:calc(18px + 16.6%); height:1px;
     background:linear-gradient(90deg, var(--amber), var(--amber-dim));}
@@ -668,7 +670,7 @@
     display:inline-flex; align-items:center; justify-content:center; font-style:normal; font-size:11.5px;
     font-weight:600; color:var(--amber);}
   .howto a.cta i{background:var(--amber); color:#0b0b0b;}
-  .howto a span{font-size:13px; font-weight:400; line-height:1.3; text-align:center;}
+  .howto a span{font-size:13.5px; font-weight:500; line-height:1.3; text-align:center;}
   .howto a.cta span{font-weight:600;}
   .howto a:active{transform:scale(.98);}
 </style>
