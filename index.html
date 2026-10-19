@@ -887,7 +887,7 @@
       <div id="uploadPrompt">📎 แตะเพื่อแนบสลิปโอนเงิน (ไม่บังคับ)</div>
       <img class="slip-preview" id="slipPreview" alt="ตัวอย่างสลิปที่แนบ">
     </div>
-    <div class="upload-hint">*กดปุ่มด้านล่างแล้วระบบจะส่งข้อมูลการจองและรูปสลิปถึงร้านทันที และเปิดไลน์ให้อัตโนมัติ — <b style="color:var(--amber)">ถ้าแนบสลิปไม่สำเร็จ กรุณาส่งรูปสลิปในไลน์</b></div>
+    <div class="upload-hint">*กดปุ่มด้านล่างแล้วระบบจะส่งข้อมูลการจองและรูปสลิปถึงร้านทันที — <b style="color:var(--amber)">เจ้าหน้าที่จะติดต่อกลับตามเบอร์ที่กรอกเพื่อยืนยันคิว</b></div>
     <div class="modal-actions">
       <button class="act-primary" id="confirmSlipBtn" onclick="submitBooking()">ส่งข้อมูลจองคิว</button>
     </div>
@@ -1875,7 +1875,7 @@
           sent = true;
           diag('สำเร็จ — อีเมลถูกส่งแล้ว');
           statusEl.style.color = 'var(--green)';
-          statusEl.textContent = '✅ ส่งข้อมูลถึงร้านแล้ว! กำลังเปิดไลน์ — กรุณาส่งรูปสลิปในไลน์ด้วยครับ';
+          statusEl.textContent = '✅ ส่งข้อมูลถึงร้านแล้ว! เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันคิวครับ';
         } else {
           statusEl.style.color = 'var(--amber)';
           statusEl.textContent = 'ส่งไม่สำเร็จ: ' + (data.message || 'ไม่ทราบสาเหตุ');
@@ -1895,7 +1895,7 @@
     if (adminOk){
       sent = true;
       statusEl.style.color = 'var(--green)';
-      statusEl.textContent = '✅ ส่งข้อมูลจอง' + (file ? 'และสลิป' : '') + 'ถึงร้านแล้ว! กำลังเปิดไลน์...';
+      statusEl.textContent = '✅ ส่งข้อมูลจอง' + (file ? 'และสลิป' : '') + 'ถึงร้านแล้ว! เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันคิวครับ';
     }
 
     if (!sent){
@@ -1903,15 +1903,14 @@
       // location change blanks it and loses everything the customer typed.
       // Show the details instead so they can copy them into LINE.
       showDiag();
-      diag('ส่งอัตโนมัติไม่สำเร็จ — ให้ลูกค้าคัดลอกข้อมูลส่งทางไลน์แทน');
+      diag('ส่งอัตโนมัติไม่สำเร็จ — ให้ลูกค้าคัดลอกข้อมูลส่งให้ร้านแทน');
       diag('--- ข้อมูลการจอง ---');
       diag(summaryText);
       statusEl.style.color = 'var(--amber)';
-      statusEl.textContent = 'ส่งอัตโนมัติไม่สำเร็จ กรุณากด "คัดลอก" ด้านล่าง แล้ววางในไลน์ร้าน';
+      statusEl.textContent = 'ส่งอัตโนมัติไม่สำเร็จ กรุณากด "คัดลอก" ด้านล่าง แล้วส่งข้อมูลให้ร้านทางช่องทางที่ติดต่ออยู่';
     }
 
-    // open LINE in a new tab; never touch this page's own location
-    try{ window.open(LINE_URL, '_blank', 'noopener'); } catch(e){ diag('เปิดไลน์ไม่ได้: ' + e.message); }
+    // ไม่เปิดไลน์อัตโนมัติแล้ว (ร้านสั่ง 19 ต.ค. 2569) — ข้อมูลและสลิปเข้าระบบ Leads ของร้านโดยตรง
 
 
   }
