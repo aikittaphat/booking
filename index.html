@@ -887,7 +887,7 @@
       <div id="uploadPrompt">📎 แตะเพื่อแนบสลิปโอนเงิน (ไม่บังคับ)</div>
       <img class="slip-preview" id="slipPreview" alt="ตัวอย่างสลิปที่แนบ">
     </div>
-    <div class="upload-hint">*กดปุ่มด้านล่างแล้วระบบจะส่งข้อมูลการจองถึงร้านทันที และเปิดไลน์ให้อัตโนมัติ — <b style="color:var(--amber)">กรุณาส่งรูปสลิปในไลน์อีกครั้ง</b> เพื่อยืนยันการโอน</div>
+    <div class="upload-hint">*กดปุ่มด้านล่างแล้วระบบจะส่งข้อมูลการจองและรูปสลิปถึงร้านทันที และเปิดไลน์ให้อัตโนมัติ — <b style="color:var(--amber)">ถ้าแนบสลิปไม่สำเร็จ กรุณาส่งรูปสลิปในไลน์</b></div>
     <div class="modal-actions">
       <button class="act-primary" id="confirmSlipBtn" onclick="submitBooking()">ส่งข้อมูลจองคิว</button>
     </div>
@@ -938,7 +938,8 @@
   // Must be a PUBLIC https:// address (a LAN IP like 192.168.x.x will not work
   // from a customer's phone, and http:// is blocked on an https page).
   // e.g. "https://xxxx.trycloudflare.com/api/web-orders"
-  const ORDER_WEBHOOK_URL = "";   // ปิดไว้ — ใช้อีเมลเป็นช่องทางเดียว
+  const ORDER_WEBHOOK_URL = "https://intelligent.bankkin.com/api/lamp-booking";   // ส่งเข้า Leads ลูกค้า
+  const ORDER_TOKEN = "lamp-77a7e9676097ff06e071d547a8e21a650e0ccfba";
   // ฝากรูปสลิปฟรีที่ imgbb แล้วแนบ "ลิงก์รูป" ไปในอีเมล
   // ขอคีย์ฟรีที่ https://api.imgbb.com/  (สมัคร 1 นาที)
   const IMGBB_API_KEY = "";
@@ -1623,8 +1624,37 @@
 
   // Sends a copy of the order to the shop's admin backend, if one is configured.
   // Never blocks the customer: any failure is ignored silently.
+  // ย่อรูปสลิปในเครื่องลูกค้าก่อนส่ง (ด้านยาวไม่เกิน maxPx · JPEG) จะได้ไม่กินเน็ตมือถือ
+  async function fileToJpegBase64(file, maxPx){
+    try{
+      const dataUrl = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(String(r.result));
+        r.onerror = () => rej(new Error('อ่านไฟล์ไม่ได้'));
+        r.readAsDataURL(file);
+      });
+      const img = await new Promise((res, rej) => {
+        const im = new Image();
+        im.onload = () => res(im);
+        im.onerror = () => rej(new Error('เปิดรูปไม่ได้'));
+        im.src = dataUrl;
+      });
+      const sc = Math.min(1, maxPx / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.max(1, Math.round(img.width * sc));
+      cv.height = Math.max(1, Math.round(img.height * sc));
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      return cv.toDataURL('image/jpeg', 0.85);
+    } catch(e){
+      diag('ย่อรูปสลิปไม่ได้: ' + e.message);
+      return '';
+    }
+  }
+
+  // ส่งข้อมูลจอง + รูปสลิป เข้าระบบ Leads ลูกค้าของร้าน (intelligent.bankkin.com)
+  // คืน true เมื่อระบบร้านรับแล้ว · ล้มเหลวคืน false (อีเมลยังเป็นช่องสำรอง)
   async function sendToShopAdmin({ name, phone, car, summaryText, file }){
-    if (!ORDER_WEBHOOK_URL) return;
+    if (!ORDER_WEBHOOK_URL) return false;
     try{
       const c = state._computed || {};
       const picked = [];
@@ -1632,27 +1662,36 @@
       if (state.tube)  picked.push('แท่งไฟเดย์ไลท์เส้นบน');
       if (state.chip)  picked.push('วงจรและชิป LED');
       if (state.glass) picked.push('กระจกหน้าโคม' + (state.glassSides === 2 ? ' (ทั้งคู่)' : ' (ข้างเดียว)'));
+      const slipB64 = file ? await fileToJpegBase64(file, 1600) : '';
+      diag('รูปสลิปที่จะส่ง: ' + (slipB64 ? Math.round(slipB64.length * 3 / 4 / 1024) + ' KB' : 'ไม่มี'));
 
-      // JSON only: FormData cannot cross this page's sandbox boundary
       const r = await fetch(ORDER_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          token: ORDER_TOKEN,
           customer_name: name,
           phone, car,
           model: document.getElementById('modelHeroCaption').textContent,
           items: picked.join(', '),
           amount: String(c.bundleActive ? c.bundlePrice : (c.grand || 0)),
           booked_day: state._pickedDay || '',
-          slip_filename: file ? file.name : '',
-          source: 'หน้าเว็บฟื้นฟูไฟหน้ารถยุโรป',
+          slip_b64: slipB64,
+          slip_name: file ? file.name : '',
+          source: 'web-lamp-restore',
           summary: summaryText
         })
       });
-      diag('ส่งเข้าระบบแอดมิน: HTTP ' + r.status);
+      let j = null;
+      try { j = await r.json(); } catch(e){}
+      diag('ส่งเข้าระบบร้าน: HTTP ' + r.status
+           + (j && j.id ? ' · Lead #' + j.id : '')
+           + (j && j.slip ? ' · สลิป ' + j.slip + ' รูป' : '')
+           + (j && j.error ? ' · ' + j.error : ''));
+      return !!(j && j.ok);
     } catch(e){
-      // shop backend offline or blocking us — the e-mail already went out
-      diag('ส่งเข้าระบบแอดมินไม่สำเร็จ: ' + e.message);
+      diag('ส่งเข้าระบบร้านไม่สำเร็จ: ' + e.message);
+      return false;
     }
   }
 
@@ -1849,6 +1888,14 @@
         diag('เกิดข้อผิดพลาด: ' + err.name + ' — ' + err.message);
       }
       btn.disabled = false;
+    }
+
+    // ระบบ Leads ของร้านรับแล้ว = สำเร็จ แม้อีเมลจะส่งไม่ผ่าน
+    const adminOk = await adminPush;
+    if (adminOk){
+      sent = true;
+      statusEl.style.color = 'var(--green)';
+      statusEl.textContent = '✅ ส่งข้อมูลจอง' + (file ? 'และสลิป' : '') + 'ถึงร้านแล้ว! กำลังเปิดไลน์...';
     }
 
     if (!sent){
