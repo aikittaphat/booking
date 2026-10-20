@@ -658,11 +658,7 @@
   /* ---- ขั้นตอนการจอง 3 ขั้น (ใต้รูปปก) : แบบ A เส้นไทม์ไลน์ + ความคืบหน้าจริง ---- */
   .howto-title{max-width:620px; margin:22px auto 0; padding:0 18px; text-align:center;
     font-family:'Kanit',sans-serif; font-weight:600; font-size:17px; color:var(--text); letter-spacing:.01em;}
-  /* เส้นคั่นเหลืองไล่เฉด ระหว่างแถบขั้นตอนกับช่องค้นหา (วาดตัวเองตอนเปิดหน้า) */
-  .howto-divider{width:min(240px, 64%); height:2px; margin:18px auto 2px; border-radius:2px;
-    background:linear-gradient(90deg, transparent, var(--amber-hot) 35%, var(--amber) 65%, transparent);
-    transform-origin:center; animation:howtoDraw 1s .2s cubic-bezier(.2,.7,.3,1) both;}
-  .howto{max-width:620px; margin:14px auto 2px; padding:0 18px; display:grid;
+  .howto{max-width:620px; margin:14px auto 6px; padding:0 18px; display:grid;
     grid-template-columns:repeat(3,1fr); position:relative; font-family:'Kanit',sans-serif;}
   /* รางเส้น (จาง) วาดตัวเองตอนเปิดหน้า */
   .howto::before{content:""; position:absolute; top:10px; left:calc(18px + 16.6%); right:calc(18px + 16.6%); height:1px;
@@ -689,8 +685,81 @@
   @keyframes howtoDraw{from{transform:scaleX(0);} to{transform:scaleX(1);}}
   @keyframes howtoPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,198,26,.45);} 50%{box-shadow:0 0 0 8px rgba(255,198,26,0);}}
   @media (prefers-reduced-motion: reduce){
-    .howto::before, .howto-divider, .howto a.cur i{animation:none;}
+    .howto::before, .howto a.cur i{animation:none;}
     .howto-fill, .howto a i, .howto a span{transition:none;}
+  }
+
+  /* ---- การ์ด 3 ช่องตามขั้นตอน ---- */
+  .stage{margin-top:16px; background:linear-gradient(180deg, #121317, #0e0f12); border:1px solid var(--line);
+    border-radius:18px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.35);
+    transition:border-color .35s ease, box-shadow .35s ease;}
+  .stage-head{display:flex; align-items:center; gap:10px; padding:13px 15px; border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg, rgba(255,198,26,.07), transparent 65%);}
+  .stage-head i{flex:none; width:22px; height:22px; border-radius:50%; background:var(--bg); border:1.5px solid var(--amber);
+    display:inline-flex; align-items:center; justify-content:center; font-style:normal; font-family:'Kanit',sans-serif;
+    font-size:12px; font-weight:600; color:var(--amber); transition:background .3s, color .3s;}
+  .stage-head b{font-family:'Kanit',sans-serif; font-weight:600; font-size:16px; color:var(--text); letter-spacing:.01em;
+    transition:color .3s;}
+  .stage-head small{margin-left:auto; font-size:12px; color:var(--muted); text-align:right; line-height:1.3; transition:color .3s;}
+  .stage-body{padding:14px 15px 16px;}
+  .stage-body-model{padding:0 0 16px;}
+  .stage-body-model .model-search{margin-top:14px;}
+  .stage-body-model .selected-stage{margin:16px 15px 0;}
+  .stage .part-gallery{margin-top:0;}
+  .stage .section-title{margin-top:20px; font-size:17px;}
+  .stage-book .stage-body{padding:6px 15px 16px;}
+  .stage-book .urgent-cta{margin-top:10px;}
+  .stage-book .book-btn-hero{margin-top:12px;}
+  /* สถานะตามแถบ 1-2-3 : ทำแล้ว = ✓ ทึบ · ขั้นปัจจุบัน = ขอบเหลือง + จุดหายใจ */
+  .stage.done .stage-head i{background:var(--amber); color:#0b0b0b;}
+  .stage.done .stage-head small{color:var(--amber);}
+  .stage.cur{border-color:rgba(255,198,26,.55); box-shadow:0 0 0 1px rgba(255,198,26,.14), 0 14px 40px rgba(0,0,0,.45);}
+  .stage.cur .stage-head{background:linear-gradient(90deg, rgba(255,198,26,.14), transparent 70%); border-bottom-color:rgba(255,198,26,.3);}
+  .stage.cur .stage-head i{background:var(--amber); color:#0b0b0b; animation:howtoPulse 2.2s ease-in-out infinite;}
+  .stage.cur .stage-head b{color:var(--amber);}
+  .stage .hero{padding:0;}
+  @media (prefers-reduced-motion: reduce){ .stage.cur .stage-head i{animation:none;} .stage{transition:none;} }
+
+  /* ---- จอคอม / แท็บเล็ตแนวนอน (≥ 980px) : มือถือไม่เปลี่ยน ---- */
+  @media (min-width: 980px){
+    .top-image-block{max-width:1180px; margin:18px auto 0; border-radius:22px;}
+    .top-image-block img{max-height:600px; object-fit:cover; object-position:center;}
+    .howto-title, .howto{max-width:760px;}
+    .wrap{max-width:1100px; padding:0 24px;}
+    .hero{padding:34px 0 6px; max-width:760px;}
+    .hero h1{font-size:38px;}
+    .hero p{font-size:16px;}
+    /* กริด : ซ้าย = การ์ด 1-2 · ขวา = การ์ด 3 ติดตามตอนเลื่อน */
+    .wrap.stages{display:grid; grid-template-columns:minmax(0,1fr) 340px; column-gap:24px; align-items:start;}
+    .wrap.stages > #stage1, .wrap.stages > #stage2{grid-column:1;}
+    .wrap.stages > #stage3{grid-column:2; grid-row:1 / span 2; position:sticky; top:20px;}
+    .stage-body-model .selected-frame{max-width:420px;}
+    /* แถบยอดรวม : จากเต็มจอ → กล่องลอยใต้การ์ด 3 ในคอลัมน์ขวา */
+    .summary-bar{left:auto; right:max(24px, calc((100vw - 1100px) / 2 + 24px)); width:340px; bottom:24px;
+      border-radius:16px; border:1px solid rgba(255,198,26,.28); padding:14px 16px;
+      box-shadow:0 18px 50px rgba(0,0,0,.5);}
+    body{padding-bottom:60px;}
+  }
+  @media (min-width: 1400px){
+    .wrap{max-width:1180px;}
+    .summary-bar{right:max(24px, calc((100vw - 1180px) / 2 + 24px));}
+  }
+
+  /* ---- จองได้ทันทีจากแถบยอดรวม และจากกล่องสรุปค่าใช้จ่าย ---- */
+  .bar-actions{display:flex; align-items:stretch; gap:8px; flex:none;}
+  .cta-btn.ghost{padding:12px 12px; font-size:13px; white-space:nowrap;}
+  .cta-btn.primary{background:var(--amber); color:#0b0b0b; border-color:var(--amber); font-weight:700;
+    font-size:16px; padding:12px 20px; white-space:nowrap; box-shadow:0 0 18px rgba(255,194,26,.35);}
+  .cta-btn.primary:not(:disabled):hover{background:var(--amber-hot);}
+  .cta-btn.primary:disabled{opacity:.35; box-shadow:none;}
+  .cost-book-btn{margin-top:14px; font-size:16px; padding:13px; border-radius:10px;}
+  .cost-book-btn:disabled{display:none;}
+  .cost-summary-section.visible{max-height:560px;}
+  @media (max-width: 360px){ .cta-btn.ghost{display:none;} }
+  @media (min-width: 980px){
+    .summary-bar{flex-wrap:wrap;}
+    .bar-actions{width:100%;}
+    .bar-actions .cta-btn.primary{flex:1;}
   }
 </style>
 </head>
@@ -708,16 +777,14 @@
   <a onclick="howtoGo('items')"><i>2</i><span>เปลี่ยนชิ้นไหนบ้าง</span></a>
   <a class="cta" onclick="howtoGo('book')"><i>3</i><span>จองเลย</span></a>
 </div>
-<div class="howto-divider" aria-hidden="true"></div>
 <script>
   // แตะขั้นตอนแล้วเลื่อนไปส่วนนั้น (1 ช่องค้นหารุ่น · 2 รายการชิ้นส่วน · 3 ปุ่มจอง)
   function howtoGo(k){
-    var el = k === 'model' ? document.getElementById('modelSearch')
-           : k === 'items' ? document.querySelector('.items')
-           : document.getElementById('bookBtn');
-    if (!el) return;
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    if (k === 'model') setTimeout(function(){ el.focus(); }, 450);
+    var card = document.getElementById(k === 'model' ? 'stage1' : (k === 'items' ? 'stage2' : 'stage3'));
+    if (!card) return;
+    var y = card.getBoundingClientRect().top + window.pageYOffset - 12;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    if (k === 'model'){ var se = document.getElementById('modelSearch'); if (se) setTimeout(function(){ se.focus({ preventScroll: true }); }, 500); }
   }
   // อัปเดตแถบตามความคืบหน้าจริง : เลือกรุ่นแล้ว → ✓ ขั้น 1 · เลือกชิ้นส่วนแล้ว → ✓ ขั้น 2 · ขั้นถัดไปหายใจ
   function howtoUpdate(){
@@ -738,6 +805,18 @@
     var fill = box.querySelector('.howto-fill');
     if (fill) fill.style.setProperty('--p', cur === 0 ? '0' : (cur === 1 ? '.5' : '1'));
     box.classList.toggle('go', cur > 0);
+    // การ์ด 3 ช่องเปลี่ยนสถานะตามแถบ
+    var hints = ['ค้นหา หรือแตะรูปรุ่นรถ', 'แตะเลือกได้หลายรายการ', 'มัดจำ 1,000 บาท ล็อกคิว'];
+    for (var j = 0; j < 3; j++){
+      var card = document.getElementById('stage' + (j + 1));
+      if (!card) continue;
+      card.classList.toggle('done', done[j]);
+      card.classList.toggle('cur', j === cur);
+      var ci = card.querySelector('.stage-head i');
+      var cs = card.querySelector('.stage-head small');
+      if (ci) ci.textContent = done[j] ? '\u2713' : String(j + 1);
+      if (cs) cs.textContent = done[j] ? 'เรียบร้อย' : hints[j];
+    }
   }
   window.addEventListener('load', function(){
     var touch = function(){ if (typeof state !== 'undefined'){ state._modelTouched = true; } howtoUpdate(); };
@@ -747,17 +826,6 @@
     howtoUpdate();
   });
 </script>
-
-<div class="model-search">
-  <span class="search-icon">🔎</span>
-  <input id="modelSearch" type="search" inputmode="search"
-         placeholder="ค้นหารุ่นรถของคุณ เช่น W205, GLC, X5"
-         oninput="onModelSearch()">
-  <button type="button" class="search-clear" id="searchClear" onclick="clearModelSearch()">✕</button>
-</div>
-<div class="search-note" id="searchNote"></div>
-<div class="brand-tabs" id="brandTabs"></div>
-<div class="model-scroll" id="modelScroll"></div>
 
 <div class="wrap">
   <div class="hero">
@@ -770,6 +838,24 @@
     </div>
   </div>
 
+</div>
+
+<div class="wrap stages">
+<section class="stage" id="stage1">
+  <div class="stage-head"><i>1</i><b>เลือกรุ่นรถ</b><small>ค้นหา หรือแตะรูปรุ่นรถ</small></div>
+  <div class="stage-body stage-body-model">
+<div class="model-search">
+  <span class="search-icon">🔎</span>
+  <input id="modelSearch" type="search" inputmode="search"
+         placeholder="ค้นหารุ่นรถของคุณ เช่น W205, GLC, X5"
+         oninput="onModelSearch()">
+  <button type="button" class="search-clear" id="searchClear" onclick="clearModelSearch()">✕</button>
+</div>
+<div class="search-note" id="searchNote"></div>
+<div class="brand-tabs" id="brandTabs"></div>
+<div class="model-scroll" id="modelScroll"></div>
+
+
   <!-- SELECTED MODEL SHOWCASE -->
   <div class="selected-stage">
     <div class="selected-label">รุ่นรถที่คุณเลือก</div>
@@ -779,6 +865,12 @@
     <div class="selected-name" id="modelHeroCaption">—</div>
   </div>
 
+  </div>
+</section>
+
+<section class="stage" id="stage2">
+  <div class="stage-head"><i>2</i><b>เปลี่ยนชิ้นไหนบ้าง</b><small>แตะเลือกได้หลายรายการ</small></div>
+  <div class="stage-body">
   <!-- PART PREVIEW: sharpens as each item is ticked -->
   <div class="part-gallery">
     <div class="part-cell" id="partLine" onclick="toggleItem('line')" title="แตะเพื่อเลือก">
@@ -887,6 +979,7 @@
         <div class="cost-promo-scarcity">🔥 เหลือ 3 ชุดสุดท้ายเท่านั้น!</div>
         <div class="cost-promo-timer" id="costPromoTimer">⏳ เหลือเวลาอีก 05:00 นาที</div>
       </div>
+      <button class="book-btn cost-book-btn" id="costBookBtn" onclick="handleBooking()">จองคิวด้วยยอดนี้ →</button>
     </div>
   </div>
 
@@ -905,10 +998,18 @@
     <div class="bundle-scarcity" id="bundleScarcity">เหลือ 3 ชุดสุดท้ายเท่านั้น!</div>
   </div>
 
+  </div>
+</section>
+
+<section class="stage stage-book" id="stage3">
+  <div class="stage-head"><i>3</i><b>จองเลย</b><small>มัดจำ 1,000 บาท ล็อกคิว</small></div>
+  <div class="stage-body">
   <!-- CALL TO ACTION -->
   <div class="urgent-cta" id="urgentCta">⚡ กดจองได้เลย ด่วน! เหลือ 3 ชุดเท่านั้น</div>
   <button class="book-btn book-btn-hero" id="bookBtn" onclick="handleBooking()">จองเลย</button>
   <div class="book-status" id="bookStatus"></div>
+  </div>
+</section>
 
 </div>
 
@@ -920,7 +1021,10 @@
     <div class="total-value mono" id="grandTotal">0 บาท</div>
     <div class="total-note" id="laborExcludedNote">*ยังไม่รวมค่าแรง</div>
   </div>
-  <button class="cta-btn" id="submitBtn" disabled onclick="scrollToCostSummary()">ถ้ารวมค่าแรงเท่าไหร่?</button>
+  <div class="bar-actions">
+    <button class="cta-btn ghost" id="submitBtn" disabled onclick="scrollToCostSummary()" title="ดูค่าแรงและสรุปค่าใช้จ่าย">ค่าแรง?</button>
+    <button class="cta-btn primary" id="barBookBtn" disabled onclick="handleBooking()">จองเลย</button>
+  </div>
 </div>
 
 <div class="toast" id="toast">คัดลอกแล้ว</div>
@@ -1584,6 +1688,8 @@
 
     document.getElementById('grandTotal').textContent = itemsCount > 0 ? fmt(displayTotal) : '0 บาท';
     document.getElementById('submitBtn').disabled = itemsCount === 0;
+    var _bb = document.getElementById('barBookBtn');  if (_bb) _bb.disabled = itemsCount === 0;
+    var _cb = document.getElementById('costBookBtn'); if (_cb) _cb.disabled = itemsCount === 0;
 
     document.getElementById('urgentCta').classList.toggle('show', bundleActive);
     document.getElementById('bookBtn').disabled = itemsCount === 0;
