@@ -46,8 +46,10 @@ marketing/brand-voice.md เสียงของแบรนด์
 
 ## การ deploy
 
-- [ใส่ว่า host ที่ไหน เช่น GitHub Pages / Netlify / Vercel และ URL จริงของเว็บ]
-- push เข้า `main` = [ขึ้นเว็บจริงทันทีหรือไม่]
+- **Host:** GitHub Pages (deploy จาก branch `main`)
+- **URL เว็บจริง:** https://aikittaphat.github.io/booking/
+- **merge หรือ push เข้า `main` = ขึ้นเว็บจริงทันที** (ภายใน 1–2 นาที) ทำงานบน branch แยกเสมอ แล้วเปิด PR ให้เจ้าของร้านกด Merge เอง
+- **repo เป็น Public:** ทุกไฟล์ใน repo (รวม `CLAUDE.md`, `HANDOFF.md`, `marketing/`) เปิดอ่านได้ทั้งบน github.com และผ่าน URL เว็บ ห้ามเขียนรหัสผ่าน, ข้อมูลลูกค้า หรือยอดขายลงในไฟล์ใด ๆ ของ repo นี้
 
 ## การแบ่งงานระหว่าง 2 บัญชี
 
